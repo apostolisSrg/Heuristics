@@ -59,7 +59,7 @@ def mk_closest(D, n):
 
 
 def length(tour, D):
-    #Calculates the duration of a tour according to table 'D'
+    # Calculates the duration of a tour according to table 'D'
     z = D[tour[-1], tour[0]]    # edge from the last to the first edge of the path
     for i in range(1,len(tour)):
         z += D[tour[i], tour[i-1]]     # adds length to edges of cities i-1 with i
@@ -116,12 +116,12 @@ def exchange(tour, tinv, i, j):
 
 
 def improve(tour, z, D, C):
-#Improves tour 't' by swapping edges ; returns optimized path length
+# Improves tour 't' by swapping edges ; returns optimized path length
 
     n = len(tour)
     tinv = [0 for i in tour]
     for k in range(n):
-        tinv[tour[k]] = k  # θέση κάθε πόλης στη διαδρομή 't'
+        tinv[tour[k]] = k  # location of each city on route 't'
     for i in range(n):
         a,b = tour[i],tour[(i+1)%n]
         dist_ab = D[a,b]
@@ -134,7 +134,7 @@ def improve(tour, z, D, C):
             dist_cd = D[c,d]
             dist_bd = D[b,d]
             delta = (dist_ac + dist_bd) - (dist_ab + dist_cd)
-            if delta < 0:       # η ανταλλαγή μειώνει το μήκος
+            if delta < 0:      # swap reduces the length
                 exchange(tour, tinv, i, j)
                 z += delta
                 improved = True
@@ -151,7 +151,7 @@ def improve(tour, z, D, C):
             dist_cd = D[c,d]
             dist_ac = D[a,c]
             delta = (dist_ac + dist_bd) - (dist_ab + dist_cd)
-            if delta < 0:       # η ανταλλαγή μειώνει το μήκος
+            if delta < 0:       # swap reduces the length
                 exchange(tour, tinv, i, j)
                 z += delta
                 break
@@ -179,7 +179,7 @@ def multistart_localsearch(k, n, D, report=None):
         report-- if none, called to print detailed results
         Returns the best solution and its cost"""
 
-    C = mk_closest(D, n) #creates a sorted list of distances to each node
+    C = mk_closest(D, n) # creates a sorted list of distances to each node
     bestt=None
     bestz=None
     for i in range(0,k):
@@ -213,10 +213,12 @@ if __name__ == "__main__":
 
     print ("*** Applying Construction Heuristics and Improvement Heuristics for 52 locations (coordinates) of Berlin.\n"
            "The concept is to find the minimum z (length) passing by all locations on a single route ***","\n")
+ 
     # random construction
     print("Applying the Local Search Algorithm for a Random Construction:\n")
     tour = randtour(n)
-      # Creates a random tour
+ 
+    # Creates a random tour
     z = length(tour, D)  # Calculates the length of the tour
     print("Random Route: ", end="")
     print_route(tour)
@@ -229,7 +231,7 @@ if __name__ == "__main__":
     # greedy construction
     print("Applying the Local Search Algorithm for a Greedy Construction with Nearest Neighbor:\n")
     for i in range(n):
-        tour = nearest_neighbor(n, i, D)     # δημιουργεί μια άπληστη διαδρομή, πηγαίνοντας πρώτα στην πόλη 'i'
+        tour = nearest_neighbor(n, i, D)    # create a greedy route, going to city 'i' first
         z = length(tour, D)
         print("nneigh: ", end="")
         print_route(tour)
