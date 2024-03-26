@@ -5,8 +5,8 @@ import time
 
 
 """The code implementation below contains a number of construction heuristics such as Nearest Neighbor and Random Tours
- for finding a solution to berlin52.tsp as well as improvement heuristics
-  (Local Search, Local Search with Random Start)"""
+    Greedy Algorithm for finding a solution to berlin52.tsp as well as improvement heuristics
+    (Local Search, Multi- Start Local Search)"""
 
 def dist(cord1, cord2):
     x1, y1 = cord1
@@ -27,6 +27,13 @@ def mk_matrix(coord, dist):
             D[j,i] = D[i,j]
     return n,D
 
+
+def print_route(tour):
+    for i in range(len(tour)):
+        if not i == len(tour) - 1:
+            print(tour[i] + 1, "\u2192 ", end="")
+        else:
+            print(tour[i] + 1, end="")
 
 # parse file
 def read_tsplib(berlin52):
@@ -59,7 +66,7 @@ def mk_closest(D, n):
 
 
 def length(tour, D):
-    # Calculates the duration of a tour according to table 'D'
+    #Calculates the duration of a tour according to table 'D'
     z = D[tour[-1], tour[0]]    # edge from the last to the first edge of the path
     for i in range(1,len(tour)):
         z += D[tour[i], tour[i-1]]     # adds length to edges of cities i-1 with i
@@ -116,7 +123,7 @@ def exchange(tour, tinv, i, j):
 
 
 def improve(tour, z, D, C):
-# Improves tour 't' by swapping edges ; returns optimized path length
+#Improves tour 't' by swapping edges ; returns optimized path length
 
     n = len(tour)
     tinv = [0 for i in tour]
@@ -134,7 +141,7 @@ def improve(tour, z, D, C):
             dist_cd = D[c,d]
             dist_bd = D[b,d]
             delta = (dist_ac + dist_bd) - (dist_ab + dist_cd)
-            if delta < 0:      # swap reduces the length
+            if delta < 0:       # swap reduces the length
                 exchange(tour, tinv, i, j)
                 z += delta
                 improved = True
@@ -201,24 +208,18 @@ if __name__ == "__main__":
 
     init = time.process_time()
     def report_sol(obj, s=""):
-        print(f"CPUtime: {round(time.process_time(),4)}sec,", f"z = {obj},", f"tour: {s}")
+        print(f"CPUtime: {round(time.process_time(),4)}sec,", f"z = {obj},", "tour:", end=" ")
+        print_route(s)
+        print("")
         print("\t\t   \u2193")
 
-    def print_route(tour):
-        for i in range(len(tour)):
-            if not i == len(tour) - 1:
-                print(tour[i] + 1, "\u2192 ", end="")
-            else:
-                print(tour[i] + 1, end="")
 
     print ("*** Applying Construction Heuristics and Improvement Heuristics for 52 locations (coordinates) of Berlin.\n"
            "The concept is to find the minimum z (length) passing by all locations on a single route ***","\n")
- 
     # random construction
     print("Applying the Local Search Algorithm for a Random Construction:\n")
     tour = randtour(n)
- 
-    # Creates a random tour
+      # Creates a random tour
     z = length(tour, D)  # Calculates the length of the tour
     print("Random Route: ", end="")
     print_route(tour)
@@ -231,7 +232,7 @@ if __name__ == "__main__":
     # greedy construction
     print("Applying the Local Search Algorithm for a Greedy Construction with Nearest Neighbor:\n")
     for i in range(n):
-        tour = nearest_neighbor(n, i, D)    # create a greedy route, going to city 'i' first
+        tour = nearest_neighbor(n, i, D)   # create a greedy route, going to city 'i' first
         z = length(tour, D)
         print("nneigh: ", end="")
         print_route(tour)
@@ -248,4 +249,6 @@ if __name__ == "__main__":
     niter = 100
     tour,z = multistart_localsearch(niter, n, D, report_sol)
     assert z == length(tour, D)
-    print (f"Best Found Solution: z = {z}", f" tour: {tour}")
+    print (f"Best Found Solution: z = {z},","tour: ", end="")
+    print_route(tour)
+
